@@ -1,9 +1,28 @@
 pipeline {
     agent { 
-		docker { 
-			image 'alpine:latest' 
-		}
-	}
+        docker { 
+            image 'alpine:latest' 
+        }
+    }
+    parameters {
+       choice(name: 'STAGE', choices: ['build', 'test'], description: '')
+    }
     stages {
+        stage('build'){
+        when {
+                    environment name: 'STAGE', value: 'build'
+                }
+        steps{
+            echo 'build'
+        }
+    }
+    stage('test'){
+        when {
+                    environment name: 'STAGE', value: 'test'
+                }
+        steps{
+            echo 'test'
+        }
+    }
     }
 }
