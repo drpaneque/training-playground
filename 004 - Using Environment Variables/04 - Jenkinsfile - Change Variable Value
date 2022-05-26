@@ -10,8 +10,10 @@ environment {
 NOTIFICATION_EMAIL="TEST_NOTIFICATION"
 	}
 steps {
+script{
 env.NOTIFICATION_EMAIL="10"
 echo "$NOTIFICATION_EMAIL"
+}
 }
 }
 }
