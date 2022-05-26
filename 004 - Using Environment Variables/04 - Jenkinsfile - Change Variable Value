@@ -1,9 +1,18 @@
 pipeline {
-    agent { 
-		docker { 
-			image 'alpine:latest' 
-		}
+agent {
+docker {
+image 'alpine:latest'
+}
+}
+stages {
+stage('build') {
+environment {
+NOTIFICATION_EMAIL="TEST_NOTIFICATION"
 	}
-    stages {
-    }
+steps {
+	NOTIFICATION_EMAIL="10"
+echo "$NOTIFICATION_EMAIL"
+}
+}
+}
 }
