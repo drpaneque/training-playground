@@ -1,21 +1,16 @@
 pipeline {
-    agent { 
-      docker { 
-         image 'alpine:latest' 
-      }
-   }
-    stages {
-        stage('build') {
-            steps {
-                sh "apk add curl"
-                sh "curl -o google.html www.google.com"
-            }
-        }
-    }
-
-    post{
-        success{
-            archiveArtifacts artifacts: 'google.html'
-        }
-    }
+agent {
+docker {
+image 'maven:3.3.3'
+args '--network training-playground'
+}
+}
+stages {
+stage('tests') {
+steps {
+sh "mvn -f '005 - Recording Test Results and Artifacts/03 - Sonar Integration' sonar:sonar -Dsonar.projectKey='test-moises2' \
+-Dsonar.projectName='test-moises2' -Dsonar.host.url=http://sonarqube:9000"
+}
+}
+}
 }
