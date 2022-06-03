@@ -1,22 +1,32 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>training</groupId>
-    <artifactId>java-app</artifactId>
-    <version>1.0.0-1</version>
-    <distributionManagement>
-        <repository>
-        <id>maven-releases</id>
-        <name>Work pls</name>
-        <url>http://nexus:8081/repository/maven-releases</url>
-        </repository>
-    </distributionManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.5.2</version>
-        </dependency>
-    </dependencies>
-</project>
+pipeline {
+    agent { 
+        docker { 
+                    image 'maven:3.3.3'
+            args '--network training-playground'
+            }
+    }
+    stages {
+        stage('build') {
+            steps {
+                configFileProvider(
+                [configFile(fileId: 'mvn-settings',
+                    targetLocation: 'settings.xml')]) {
+                sh 'mvn -s settings.xml -f "005 - Recording Test Results and Artifacts/04 - Publish in Nexus" clean install'
+            }
+        }
+        }
+    stage('nexus') {
+            steps {
+            configFileProvider(
+                [configFile(fileId: 'mvn-settings',
+                    targetLocation: 'settings.xml')]) {
+                sh "mvn -s settings.xml -f '005 - Recording Test Results and Artifacts/04 - Publish in Nexus' \
+        -Dfile='005 - Recording Test Results and Artifacts/04 - Publish in Nexus/target/java-app-1.0.0.jar' \
+        -Durl='http://nexus:8081/repository/maven-releases/' \
+        -DrepositoryId='maven-releases' \
+        deploy"
+        }
+            }
+        }
+    }
+}
